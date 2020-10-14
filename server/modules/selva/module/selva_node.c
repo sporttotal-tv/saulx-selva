@@ -3,13 +3,19 @@
 #include "alias.h"
 #include "errors.h"
 #include "hierarchy.h"
-#include "selva_set.h"
 #include "selva_node.h"
+#include "selva_object.h"
+#include "selva_set.h"
 
 static int initialize_node(RedisModuleCtx *ctx, RedisModuleKey *key, RedisModuleString *key_name, const Selva_NodeId nodeId) {
     const int is_root = !memcmp(nodeId, ROOT_NODE_ID, SELVA_NODE_ID_SIZE);
+    struct SelvaObject *obj;
 
+    SelvaObject_Key2Obj(key, &obj); /* TODO Handle errors */
+
+    /* FIXME Remove double write */
     RedisModule_HashSet(key, REDISMODULE_HASH_NX | REDISMODULE_HASH_CFIELDS, "$id", key_name, NULL);
+    SelvaObject_SetStr(obj, RedisModule_CreateString(ctx, "$id", 3), key_name);
 
     /* Set the type for root. */
     if (is_root) {
@@ -20,7 +26,9 @@ static int initialize_node(RedisModuleCtx *ctx, RedisModuleKey *key, RedisModule
             return SELVA_MODIFY_HIERARCHY_ENOMEM;
         }
 
+        /* FIXME Remove double write */
         RedisModule_HashSet(key, REDISMODULE_HASH_NX | REDISMODULE_HASH_CFIELDS, "type", type, NULL);
+        SelvaObject_SetStr(obj, RedisModule_CreateString(ctx, "type", 3), type);
     }
 
     return 0;
@@ -215,24 +223,42 @@ int SelvaNode_Delete(RedisModuleCtx *ctx, RedisModuleString *id) {
 }
 
 int SelvaNode_ExistField(RedisModuleCtx *ctx, RedisModuleKey *node_key, const RedisModuleString *field) {
+    struct SelvaObject *obj;
     int exists, err;
 
-    err = RedisModule_HashGet(node_key, REDISMODULE_HASH_EXISTS, field, &exists, NULL);
+    SelvaObject_Key2Obj(node_key, &obj); /* TODO Handle errors */
 
+#if 0
+    err = RedisModule_HashGet(node_key, REDISMODULE_HASH_EXISTS, field, &exists, NULL);
+#endif
+    return !SelvaObject_Exists(obj, field);
+
+#if 0
     return err == REDISMODULE_OK && exists;
+#endif
 }
 
 int SelvaNode_GetField(RedisModuleCtx *ctx, RedisModuleKey *node_key, const RedisModuleString *field, RedisModuleString **out) {
+    int err;
+    struct SelvaObject *obj;
+
+    SelvaObject_Key2Obj(node_key, &obj); /* TODO Handle errors */
+    err = SelvaObject_GetStr(obj, field, out);
+#if 0
     if (RedisModule_HashGet(node_key, REDISMODULE_HASH_NONE, field, out, NULL) != REDISMODULE_OK) {
         /* TODO Can we determine the exact cause? */
         return SELVA_EGENERAL;
     }
+#endif
 
-    return 0;
+    return err;
 }
 
 int SelvaNode_SetField(RedisModuleCtx *ctx, RedisModuleKey *node_key, RedisModuleString *field, RedisModuleString *value) {
+    struct SelvaObject *obj;
     TO_STR(field);
+
+    SelvaObject_Key2Obj(node_key, &obj); /* TODO Handle errors */
 
     /*
      * If the field name contains a dot then the field is an object of some
@@ -253,10 +279,14 @@ int SelvaNode_SetField(RedisModuleCtx *ctx, RedisModuleKey *node_key, RedisModul
 
         field_container = RedisModule_CreateString(ctx, field_str, len);
         object_field_identifier = RedisModule_CreateString(ctx, SELVA_OBJECT_KEYWORD, sizeof(SELVA_OBJECT_KEYWORD) - 1);
+        /* FIXME Remove double write */
         (void)RedisModule_HashSet(node_key, REDISMODULE_HASH_NONE, field_container, object_field_identifier, NULL);
+        SelvaObject_SetStr(obj, field_container, object_field_identifier);
     }
 
+    /* FIXME Remove double write */
     (void)RedisModule_HashSet(node_key, REDISMODULE_HASH_NONE, field, value, NULL);
+    SelvaObject_SetStr(obj, field, value);
 
     return 0;
 }
