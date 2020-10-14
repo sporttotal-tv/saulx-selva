@@ -159,7 +159,7 @@ int SelvaObject_Exists(struct SelvaObject *obj, const RedisModuleString *key_nam
     return 0;
 }
 
-int SelvaObject_GetStr(struct SelvaObject *obj, RedisModuleString *key_name, RedisModuleString **out) {
+int SelvaObject_GetStr(struct SelvaObject *obj, const RedisModuleString *key_name, RedisModuleString **out) {
     struct SelvaObjectKey *key;
 
     assert(obj);
@@ -174,7 +174,7 @@ int SelvaObject_GetStr(struct SelvaObject *obj, RedisModuleString *key_name, Red
     return 0;
 }
 
-int SelvaObject_SetStr(struct SelvaObject *obj, RedisModuleString *key_name, RedisModuleString *value) {
+int SelvaObject_SetStr(struct SelvaObject *obj, const RedisModuleString *key_name, RedisModuleString *value) {
     struct SelvaObjectKey *key;
 
     assert(obj);
@@ -303,15 +303,101 @@ int SelvaObject_SetCommand(RedisModuleCtx *ctx, RedisModuleString **argv, int ar
     return REDISMODULE_OK;
 }
 
+void *SelvaObjectTypeRDBLoad(RedisModuleIO *io, int encver) {
+    struct SelvaObject *obj;
+
+    if (encver != SELVA_OBJECT_ENCODING_VERSION) {
+        /*
+         * RFE
+         * We should actually log an error here, or try to implement
+         * the ability to load older versions of our data structure.
+         */
+        return NULL;
+    }
+
+    obj = new_selva_object();
+    if (!obj) {
+        /* FIXME error handling */
+    }
+
+    int done = 0;
+    while (!done) {
+        RedisModuleString *name;
+        name = RedisModule_LoadString(io);
+
+        enum SelvaObjectType type;
+        type = RedisModule_LoadUnsigned(io);
+
+        switch (type) {
+        case SELVA_OBJECT_NULL:
+            done = 1;
+            break;
+        case SELVA_OBJECT_STRING:
+            {
+                RedisModuleString *value;
+                value = RedisModule_LoadString(io);
+
+                /* TODO Error handling */
+                SelvaObject_SetStr(obj, name, value);
+                RedisModule_FreeString(NULL, value);
+            }
+            break;
+        default:
+            RedisModule_LogIOError(io, "warning", "Unknown type");
+        }
+
+        RedisModule_FreeString(NULL, name);
+    }
+
+    return obj;
+}
+
+void SelvaObjectTypeRDBSave(RedisModuleIO *io, void *value) {
+    struct SelvaObject *obj = (struct SelvaObject *)value;
+    struct SelvaObjectKey *key;
+
+    RB_FOREACH(key, SelvaObjectKeys, &obj->keys_head) {
+        RedisModule_SaveStringBuffer(io, key->name, key->name_len);
+
+        /* TODO Other types */
+        if (key->type != SELVA_OBJECT_NULL) {
+            if (!key->value) {
+                RedisModule_LogIOError(io, "warning", "Value is NULL");
+                continue;
+            }
+
+            switch (key->type) {
+            case SELVA_OBJECT_STRING:
+                RedisModule_SaveUnsigned(io, key->type);
+                RedisModule_SaveString(io, key->value);
+                break;
+            default:
+                RedisModule_LogIOError(io, "warning", "Unknown type");
+            }
+        }
+    }
+
+    const char term[] = "___selva$terminator";
+    RedisModule_SaveStringBuffer(io, term, sizeof(term) - 1);   /* key name */
+    RedisModule_SaveUnsigned(io, SELVA_OBJECT_NULL);            /* key type */
+    /* nil                                                         value    */
+}
+
+void SelvaObjectTypeFree(void *value) {
+    struct SelvaObject *obj = (struct SelvaObject *)value;
+
+    destroy_selva_object(obj);
+}
+
 static int SelvaObject_OnLoad(RedisModuleCtx *ctx) {
     RedisModuleTypeMethods tm = {
         .version = REDISMODULE_TYPE_METHOD_VERSION,
-#if 0
         .rdb_load = SelvaObjectTypeRDBLoad,
         .rdb_save = SelvaObjectTypeRDBSave,
+#if 0
         .aof_rewrite = SelvaObjectTypeAOFRewrite,
-        .free = SelvaObjectTypeFree,
 #endif
+        .free = SelvaObjectTypeFree,
     };
 
     ObjectType = RedisModule_CreateDataType(ctx, "selva_obj", SELVA_OBJECT_ENCODING_VERSION, &tm);
