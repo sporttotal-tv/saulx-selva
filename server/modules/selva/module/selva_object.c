@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stdalign.h>
 #include <string.h>
 #include "redismodule.h"
 #include "errors.h"
@@ -109,13 +110,20 @@ int SelvaObject_Key2Obj(RedisModuleKey *key, struct SelvaObject **out) {
             destroy_selva_object(obj);
             return SELVA_ENOENT;
         }
+        /* TODO This check is really slow */
+#if 0
     } else if (RedisModule_ModuleTypeGetType(key) == ObjectType) {
+#endif
+    } else {
         obj = RedisModule_ModuleTypeGetValue(key);
         if (!obj) {
+            fprintf(stderr, "Invalid type\n"); /* FIXME Remove */
             return SELVA_ENOENT;
         }
+#if 0
     } else {
         return SELVA_EINVAL;
+#endif
     }
 
     *out = obj;
@@ -123,26 +131,26 @@ int SelvaObject_Key2Obj(RedisModuleKey *key, struct SelvaObject **out) {
 }
 
 static struct SelvaObjectKey *get_key(struct SelvaObject *obj, const RedisModuleString *key_name, int create) {
+    struct SelvaObjectKey *filter;
     struct SelvaObjectKey *key;
-    struct SelvaObjectKey *findRes;
     TO_STR(key_name);
-    const size_t key_size = sizeof(*key) + key_name_len + 1;
+    const size_t key_size = sizeof(struct SelvaObjectKey) + key_name_len + 1;
+    char buf[key_size] __attribute__((aligned(alignof(struct SelvaObjectKey)))); /* RFE This might be dumb */
 
-    key = RedisModule_Alloc(key_size);
-    if (!key) {
-        return NULL;
-    }
+    filter = (struct SelvaObjectKey *)buf;
+    memset(filter, 0, key_size);
+    memcpy(filter->name, key_name_str, key_name_len + 1);
+    filter->name_len = key_name_len;
 
-    memset(key, 0, key_size);
-    memcpy(key->name, key_name_str, key_name_len + 1);
-    key->name_len = key_name_len;
-
-    findRes = RB_FIND(SelvaObjectKeys, &obj->keys_head, key);
-    if (!findRes && create) {
+    key = RB_FIND(SelvaObjectKeys, &obj->keys_head, filter);
+    if (!key && create) {
+        key = RedisModule_Alloc(key_size);
+        if (!key) {
+            return NULL;
+        }
+        memcpy(key, filter, key_size);
+        memset(&key->_entry, 0, sizeof(key->_entry)); /* RFE Might not be necessary. */
         (void)RB_INSERT(SelvaObjectKeys, &obj->keys_head, key);
-    } else {
-        RedisModule_Free(key);
-        key = findRes;
     }
 
     return key;
