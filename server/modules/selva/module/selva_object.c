@@ -49,8 +49,21 @@ static struct SelvaObject *new_selva_object(void) {
     return obj;
 }
 
-void destroy_selva_object(struct SelvaObject *obj) {
-    /* TODO Clear the RB tree */
+static void destroy_key(struct SelvaObjectKey *key) {
+    switch (key->type) {
+    }
+    RedisModule_Free(key);
+}
+
+static void destroy_selva_object(struct SelvaObject *obj) {
+    struct SelvaObjectKey *key;
+    struct SelvaObjectKey *next;
+
+	for (key = RB_MIN(SelvaObjectKeys, &obj->keys_head); key != NULL; key = next) {
+		next = RB_NEXT(SelvaObjectKeys, &obj->keys_head, key);
+		RB_REMOVE(SelvaObjectKeys, &obj->keys_head, key);
+        destroy_key(key);
+    }
 
     RedisModule_Free(obj);
 }
