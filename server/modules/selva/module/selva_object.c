@@ -325,7 +325,7 @@ int SelvaObject_DelCommand(RedisModuleCtx *ctx, RedisModuleString **argv, int ar
     }
     RedisModule_ReplyWithLongLong(ctx, 1);
 
-    return REDISMODULE_OK;
+    return RedisModule_ReplicateVerbatim(ctx);
 }
 
 int SelvaObject_ExistsCommand(RedisModuleCtx *ctx, RedisModuleString **argv, int argc) {
@@ -353,7 +353,7 @@ int SelvaObject_ExistsCommand(RedisModuleCtx *ctx, RedisModuleString **argv, int
     }
     RedisModule_ReplyWithLongLong(ctx, 1);
 
-    return REDISMODULE_OK;
+    return RedisModule_ReplicateVerbatim(ctx);
 }
 
 int SelvaObject_GetCommand(RedisModuleCtx *ctx, RedisModuleString **argv, int argc) {
@@ -382,7 +382,7 @@ int SelvaObject_GetCommand(RedisModuleCtx *ctx, RedisModuleString **argv, int ar
     }
     RedisModule_ReplyWithString(ctx, value);
 
-    return REDISMODULE_OK;
+    return RedisModule_ReplicateVerbatim(ctx);
 }
 
 int SelvaObject_GetAllCommand(RedisModuleCtx *ctx, RedisModuleString **argv, int argc) {
@@ -429,7 +429,7 @@ int SelvaObject_GetAllCommand(RedisModuleCtx *ctx, RedisModuleString **argv, int
     }
     RedisModule_ReplySetArrayLength(ctx, n);
 
-    return REDISMODULE_OK;
+    return RedisModule_ReplicateVerbatim(ctx);
 }
 
 int SelvaObject_SetCommand(RedisModuleCtx *ctx, RedisModuleString **argv, int argc) {
@@ -479,7 +479,7 @@ int SelvaObject_SetCommand(RedisModuleCtx *ctx, RedisModuleString **argv, int ar
     }
     RedisModule_ReplyWithLongLong(ctx, 1);
 
-    return REDISMODULE_OK;
+    return RedisModule_ReplicateVerbatim(ctx);
 }
 
 void *SelvaObjectTypeRDBLoad(RedisModuleIO *io, int encver) {
@@ -597,6 +597,43 @@ void SelvaObjectTypeRDBSave(RedisModuleIO *io, void *value) {
     RedisModule_SaveStringBuffer(io, term, sizeof(term) - 1);   /* key name */
     RedisModule_SaveUnsigned(io, SELVA_OBJECT_NULL);            /* key type */
     /* nil                                                         value    */
+}
+
+void SelvaObjectTypeAOFRewrite(RedisModuleIO *aof, RedisModuleString *key, void *value) {
+    struct SelvaObject *obj = (struct SelvaObject *)value;
+    struct SelvaObjectKey *okey;
+
+    RB_FOREACH(okey, SelvaObjectKeys, &obj->keys_head) {
+        switch (okey->type) {
+        case SELVA_OBJECT_NULL:
+            /* NOP - NULL is implicit */
+            break;
+        case SELVA_OBJECT_DOUBLE:
+            {
+                RedisModuleString *v;
+                v = RedisModule_CreateStringPrintf(NULL, "%f", okey->emb_double_value);
+                RedisModule_EmitAOF(aof, "SELVA.OBJECT.SET", "sbs",
+                    key,
+                    okey->name, (size_t)okey->name_len,
+                    v);
+                RedisModule_FreeString(NULL, v);
+            }
+            break;
+        case SELVA_OBJECT_LONGLONG:
+            RedisModule_EmitAOF(aof, "SELVA.OBJECT.SET", "sbl",
+                key,
+                okey->name, (size_t)okey->name_len,
+                okey->emb_ll_value);
+            break;
+        case SELVA_OBJECT_STRING:
+            RedisModule_EmitAOF(aof, "SELVA.OBJECT.SET", "sbs",
+                okey->name, (size_t)okey->name_len,
+                okey->value);
+            break;
+        default:
+            RedisModule_LogIOError(aof, "warning", "Unknown type");
+        }
+    }
 }
 
 void SelvaObjectTypeFree(void *value) {
