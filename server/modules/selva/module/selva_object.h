@@ -20,6 +20,11 @@ struct SelvaObject;
 struct SelvaSet;
 struct RedisModuleString;
 
+#define selvaobject_autofree __attribute__((cleanup(_cleanup_SelvaObject_Destroy)))
+
+struct SelvaObject *SelvaObject_New(void);
+void SelvaObject_Destroy(struct SelvaObject *obj);
+void _cleanup_SelvaObject_Destroy(struct SelvaObject **obj);
 int SelvaObject_Key2Obj(RedisModuleKey *key, struct SelvaObject **out);
 int SelvaObject_DelKey(struct SelvaObject *obj, const struct RedisModuleString *key_name);
 int SelvaObject_Exists(struct SelvaObject *obj, const struct RedisModuleString *key_name);
@@ -35,6 +40,9 @@ int SelvaObject_GetArray(struct SelvaObject *obj, const struct RedisModuleString
 enum SelvaObjectType SelvaObject_GetType(struct SelvaObject *obj, const char *key_name, size_t key_name_len);
 int SelvaObject_RemSet(struct SelvaObject *obj, const struct RedisModuleString *key_name, struct RedisModuleString *value);
 struct SelvaSet *SelvaObject_GetSet(struct SelvaObject *obj, const struct RedisModuleString *key_name);
+ssize_t SelvaObject_Len(struct SelvaObject *obj, RedisModuleString *key_name);
+void *SelvaObject_ForeachBegin(struct SelvaObject *obj);
+void *SelvaObject_Foreach(struct SelvaObject *obj, void **iterator, enum SelvaObjectType type);
 
 /*
  * Send a SelvaObject as a Redis reply.
