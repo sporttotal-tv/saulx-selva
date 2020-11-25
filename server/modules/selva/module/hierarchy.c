@@ -7,11 +7,12 @@
 #include <string.h>
 #include <time.h>
 #include "redismodule.h"
+#include "cdefs.h"
 #include "alias.h"
 #include "async_task.h"
-#include "cdefs.h"
 #include "errors.h"
 #include "hierarchy.h"
+#include "mempool.h"
 #include "modify.h"
 #include "rpn.h"
 #include "selva_node.h"
@@ -88,7 +89,7 @@ static RedisModuleType *HierarchyType;
  */
 static int rdbLoading;
 
-static void SelvaModify_DestroyNode(SelvaModify_HierarchyNode *node);
+static void SelvaModify_DestroyNode(struct mempool *node_pool, SelvaModify_HierarchyNode *node);
 static void removeRelationships(SelvaModify_Hierarchy *hierarchy, SelvaModify_HierarchyNode *node, enum SelvaModify_HierarchyNode_Relationship rel);
 RB_PROTOTYPE_STATIC(hierarchy_index_tree, SelvaModify_HierarchyNode, _index_entry, SelvaModify_HierarchyNode_Compare)
 
@@ -134,8 +135,17 @@ static inline void RMString2NodeId(Selva_NodeId nodeId, RedisModuleString *rmStr
 }
 
 SelvaModify_Hierarchy *SelvaModify_NewHierarchy(RedisModuleCtx *ctx) {
-    SelvaModify_Hierarchy *hierarchy = RedisModule_Calloc(1, sizeof(SelvaModify_HierarchyNode));
+    SelvaModify_Hierarchy *hierarchy;
+
+    hierarchy = RedisModule_Calloc(1, sizeof(SelvaModify_HierarchyNode));
     if (unlikely(!hierarchy)) {
+        goto fail;
+    }
+
+    hierarchy->node_pool = mempool_new(1024 * 1024, sizeof(SelvaModify_HierarchyNode));
+    if (!hierarchy->node_pool) {
+        RedisModule_Free(hierarchy);
+        hierarchy = NULL;
         goto fail;
     }
 
@@ -178,12 +188,13 @@ void SelvaModify_DestroyHierarchy(SelvaModify_Hierarchy *hierarchy) {
 	for (node = RB_MIN(hierarchy_index_tree, &hierarchy->index_head); node != NULL; node = next) {
 		next = RB_NEXT(hierarchy_index_tree, &hierarchy->index_head, node);
 		RB_REMOVE(hierarchy_index_tree, &hierarchy->index_head, node);
-        SelvaModify_DestroyNode(node);
+        SelvaModify_DestroyNode(hierarchy->node_pool, node);
     }
 
     SelvaSubscriptions_DestroyAll(hierarchy);
 
     SVector_Destroy(&hierarchy->heads);
+    mempool_destroy(hierarchy->node_pool);
     RedisModule_Free(hierarchy);
 }
 
@@ -264,15 +275,17 @@ static int createNodeHash(RedisModuleCtx *ctx, const Selva_NodeId id) {
     return 0;
 }
 
-static SelvaModify_HierarchyNode *newNode(RedisModuleCtx *ctx, const Selva_NodeId id) {
-    SelvaModify_HierarchyNode *node = RedisModule_Calloc(1, sizeof(SelvaModify_HierarchyNode));
+static SelvaModify_HierarchyNode *newNode(RedisModuleCtx *ctx, struct mempool *node_pool, const Selva_NodeId id) {
+    SelvaModify_HierarchyNode *node;
+
+    node = mempool_get(node_pool);
     if (unlikely(!node)) {
         return NULL;
     };
 
     if (unlikely(!SVector_Init(&node->parents, HIERARCHY_INITIAL_VECTOR_LEN, SVector_HierarchyNode_id_compare) ||
                  !SVector_Init(&node->children, HIERARCHY_INITIAL_VECTOR_LEN, SVector_HierarchyNode_id_compare))) {
-        SelvaModify_DestroyNode(node);
+        SelvaModify_DestroyNode(node_pool, node);
         return NULL;
     }
 
@@ -304,7 +317,7 @@ static SelvaModify_HierarchyNode *newNode(RedisModuleCtx *ctx, const Selva_NodeI
     return node;
 }
 
-static void SelvaModify_DestroyNode(SelvaModify_HierarchyNode *node) {
+static void SelvaModify_DestroyNode(struct mempool *node_pool, SelvaModify_HierarchyNode *node) {
     SelvaModify_HierarchyMetadataHook **dtor_p;
 
     SET_FOREACH(dtor_p, selva_HMDtor) {
@@ -314,7 +327,7 @@ static void SelvaModify_DestroyNode(SelvaModify_HierarchyNode *node) {
 
     SVector_Destroy(&node->parents);
     SVector_Destroy(&node->children);
-    RedisModule_Free(node);
+    mempool_return(node_pool, node);
 }
 
 static SelvaModify_HierarchyNode *findNode(SelvaModify_Hierarchy *hierarchy, const Selva_NodeId id) {
@@ -373,7 +386,7 @@ static void del_node(RedisModuleCtx *ctx, SelvaModify_Hierarchy *hierarchy, Selv
         rmHead(hierarchy, node);
 
         RB_REMOVE(hierarchy_index_tree, &hierarchy->index_head, node);
-        SelvaModify_DestroyNode(node);
+        SelvaModify_DestroyNode(hierarchy->node_pool, node);
         node = NULL;
     }
 
@@ -385,6 +398,7 @@ static void del_node(RedisModuleCtx *ctx, SelvaModify_Hierarchy *hierarchy, Selv
 
         if (is_root) {
             createNodeHash(ctx, id);
+            mempool_gc(hierarchy->node_pool);
         }
     }
 }
@@ -817,7 +831,7 @@ int SelvaModify_SetHierarchy(
     int isNewNode = 0;
 
     if (!node) {
-        node = newNode(ctx, id);
+        node = newNode(ctx, hierarchy->node_pool, id);
         if (unlikely(!node)) {
             return SELVA_MODIFY_HIERARCHY_ENOMEM;
         }
@@ -826,7 +840,7 @@ int SelvaModify_SetHierarchy(
 
     if (isNewNode) {
         if (unlikely(RB_INSERT(hierarchy_index_tree, &hierarchy->index_head, node) != NULL)) {
-            SelvaModify_DestroyNode(node);
+            SelvaModify_DestroyNode(hierarchy->node_pool, node);
 
             return SELVA_MODIFY_HIERARCHY_EEXIST;
         }
@@ -937,7 +951,7 @@ int SelvaModify_AddHierarchy(
     int isNewNode = 0;
 
     if (!node) {
-        node = newNode(ctx, id);
+        node = newNode(ctx, hierarchy->node_pool, id);
         if (unlikely(!node)) {
             return SELVA_MODIFY_HIERARCHY_ENOMEM;
         }
@@ -946,7 +960,7 @@ int SelvaModify_AddHierarchy(
 
     if (isNewNode) {
         if (RB_INSERT(hierarchy_index_tree, &hierarchy->index_head, node) != NULL) {
-            SelvaModify_DestroyNode(node);
+            SelvaModify_DestroyNode(hierarchy->node_pool, node);
 
             return SELVA_MODIFY_HIERARCHY_EEXIST;
         }

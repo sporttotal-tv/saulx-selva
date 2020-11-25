@@ -42,6 +42,7 @@ typedef void SelvaModify_HierarchyMetadataHook(const Selva_NodeId id, struct Sel
     DATA_SET(selva_HMDtor, fun)
 
 struct Selva_Subscription;
+struct mempool;
 
 RB_HEAD(hierarchy_index_tree, SelvaModify_HierarchyNode);
 RB_HEAD(hierarchy_subscriptions_tree, Selva_Subscription);
@@ -54,6 +55,8 @@ struct SelvaModify_Hierarchy {
      * could be a costly operation itself.
      */
     Trx current_trx;
+
+    struct mempool *node_pool;
 
     /**
      * Index of all hierarchy nodes by ID.
