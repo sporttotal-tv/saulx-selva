@@ -1952,3 +1952,50 @@ test.serial('get - $inherit with record types does deep merge', async (t) => {
 
   client.destroy()
 })
+
+test.serial.only('get *- record', async (t) => {
+  const client = connect({ port })
+
+  await client.set({
+    $id: 'viA',
+    title: {
+      en: 'nice!',
+    },
+    objRec: {
+      myObj1: {
+        hello: 'pff',
+        value: 12,
+      },
+      obj2: {
+        hello: 'ffp',
+        value: 12,
+      },
+    },
+  })
+
+  t.deepEqual(
+    await client.get({
+      $id: 'viA',
+      $language: 'en',
+      id: true,
+      title: true,
+      objRec: { '*': { hello: true } },
+    }),
+    {
+      id: 'viA',
+      title: 'nice!',
+      objRec: {
+        myObj1: {
+          hello: 'pff',
+        },
+        obj2: {
+          hello: 'ffp',
+        },
+      },
+    }
+  )
+
+  await client.delete('root')
+
+  await client.destroy()
+})
