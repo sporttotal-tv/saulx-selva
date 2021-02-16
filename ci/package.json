@@ -1,0 +1,10 @@
+{
+  "name": "ci",
+  "private": true,
+  "version": "1.0.0",
+  "devDependencies": {
+    "ejs": "^3.1.6",
+    "execa": "^5.0.0",
+    "tap-parser": "^10.1.0"
+  }
+}
