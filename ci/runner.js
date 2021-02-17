@@ -38,6 +38,18 @@ async function generateHTML(output) {
               <ul>
                 <% for (const assert of assertions) { %>
                   <li class="<%= assert.ok ? 'test-assertion pass' : 'test-assertion fail' %>"><span class="test-entry-assertion-status"><%- assert.ok ? icons.success : icons.fail %></span><%= assert.fullName || assert.name %></li>
+                  <% if (!assert.ok) { %>
+                    <li class="test-assertion fail">
+                      <pre>
+<%= assert.diag.name %>
+<%= assert.diag.assertion %>
+<% for (const k in assert.diag.values) { %>
+<%- assert.diag.values[k] %>
+<% } %>
+<%- assert.diag.at %>
+                      </pre>
+                    </li>
+                  <% } %>
                 <% } %>
               </ul>
             </div>
@@ -112,7 +124,7 @@ async function generateHTML(output) {
       }
 
       .test-assertion.fail {
-        color: #ff0000;
+        /* color: #ff0000; */
       }
     </style>
   </body>
@@ -152,7 +164,7 @@ async function run() {
   const output = []
   for (const test of tests) {
     let entry = { name: test }
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 2; i++) {
       try {
         const { stdout, stderr } = await runTest(test)
         entry.stdout = stdout
