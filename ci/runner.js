@@ -54,7 +54,7 @@ async function generateHTML(output) {
 
     <style>
       body {
-        background-color: #42f595;
+        background-color: #b8ccc9;
       }
 
       .hidden  {
