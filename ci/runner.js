@@ -22,10 +22,20 @@ async function generateHTML(output) {
   <body>
     <div id="test-list">
       <% for (const test of output) { %>
-        <div class="test-entry  <%= test.tap.final.ok ? 'pass' : 'fail' %>">
-          <h2><a href="#"><%= test.name %></a></h2>
+        <div class="test-entry <%= test.tap.final.ok ? 'pass' : 'fail' %>">
+          <h2><span class="test-entry-status"><%- test.tap.final.fail === 0 ? icons.success : icons.fail %></span> <a href="#"><%= test.name %></a></h2>
           <div class="test-entry-details hidden">
-            <pre><%= test.stdout %></pre>
+            <div class="test-summary">
+              <ul>
+                <li>Total assertions: <%= test.tap.final.count %></li>
+                <li>Passed assertions: <%= test.tap.final.pass %></li>
+                <li>Failed assertions: <%= test.tap.final.fail %></li>
+                <li>Skipped assertions: <%= test.tap.final.skip %></li>
+              </ul>
+            </div>
+            <div class="test-stdout">
+              <pre><%= test.stderr %></pre>
+            </div>
           </div>
         </div>
       <% } %>
@@ -77,6 +87,10 @@ async function generateHTML(output) {
         border-color: black;
       }
 
+      .test-entry-details li {
+        list-style-type: none;
+      }
+
       .test-entry.pass {
         background-color: #9acd32;
       }
@@ -88,7 +102,13 @@ async function generateHTML(output) {
   </body>
 </html>
   `,
-    { output }
+    {
+      output,
+      icons: {
+        success: '&#10004;&#65039;',
+        fail: '&#10060;',
+      },
+    }
   )
 
   await fs.writeFile(path.join(process.cwd(), 'output.html'), markup, 'utf8')
