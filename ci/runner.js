@@ -20,7 +20,6 @@ async function generateHTML(output) {
   </head>
 
   <body>
-    <h1>Tests</h1>
     <div id="test-list">
       <% for (const test of output) { %>
         <div class="test-entry">
@@ -54,8 +53,27 @@ async function generateHTML(output) {
     </script>
 
     <style>
+      body {
+        background-color: #42f595;
+      }
+
       .hidden  {
         display: none;
+      }
+
+      #test-list {
+        margin-left: 10%;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+      }
+
+      .test-entry {
+        min-width: 50%;
+        padding: 10px;
+        border-radius: 10px;
+        border-color: black;
+        background-color: #f54248;
       }
     </style>
   </body>
