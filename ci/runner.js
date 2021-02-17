@@ -33,6 +33,14 @@ async function generateHTML(output) {
                 <li>Skipped assertions: <%= test.tap.final.skip %></li>
               </ul>
             </div>
+            <div class="test-assertions">
+              <% const assertions = test.tap.raw.filter(([label, result]) => label === 'assert').map(([label, result]) => result) %>
+              <ul>
+                <% for (const assert of assertions) { %>
+                  <li class="<%= assert.ok ? 'test-assertion pass' : 'test-assertion fail' %>"><span class="test-entry-assertion-status"><%- assert.ok ? icons.success : icons.fail %></span><%= assert.fullName || assert.name %></li>
+                <% } %>
+              </ul>
+            </div>
             <div class="test-stdout">
               <pre><%= test.stderr %></pre>
             </div>
@@ -97,6 +105,14 @@ async function generateHTML(output) {
 
       .test-entry.fail {
         background-color: #f54248;
+      }
+
+      .test-assertion.pass {
+        /* color: #556b2f; */
+      }
+
+      .test-assertion.fail {
+        color: #ff0000;
       }
     </style>
   </body>
