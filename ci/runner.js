@@ -22,7 +22,7 @@ async function generateHTML(output) {
   <body>
     <div id="test-list">
       <% for (const test of output) { %>
-        <div class="test-entry">
+        <div class="test-entry  <%= test.tap.final.ok ? 'pass' : 'fail' %>">
           <h2><a href="#"><%= test.name %></a></h2>
           <div class="test-entry-details hidden">
             <pre><%= test.stdout %></pre>
@@ -62,17 +62,26 @@ async function generateHTML(output) {
       }
 
       #test-list {
-        margin-left: 10%;
+        margin-left: 20%;
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         justify-content: flex-start;
       }
 
       .test-entry {
-        min-width: 50%;
+        width: 80%;
         padding: 10px;
+        margin-bottom: 20px;
+
         border-radius: 10px;
         border-color: black;
+      }
+
+      .test-entry.pass {
+        background-color: #9acd32;
+      }
+
+      .test-entry.fail {
         background-color: #f54248;
       }
     </style>
@@ -102,7 +111,7 @@ async function run() {
 
   const tests = allFiles
     .filter((f) => f.endsWith('.ts') && !IGNORE.includes(f))
-    .slice(0, 1) // TODO: remove
+    .slice(0, 2) // TODO: remove
 
   const output = []
   for (const test of tests) {
