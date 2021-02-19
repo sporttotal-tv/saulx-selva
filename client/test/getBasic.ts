@@ -70,6 +70,7 @@ test.beforeEach(async (t) => {
             type: 'object',
             properties: {
               dong: { type: 'set', items: { type: 'string' } },
+              texty: { type: 'text' },
               dung: { type: 'number' },
               dang: {
                 type: 'object',
@@ -1179,8 +1180,8 @@ test.serial(
       await client.get({
         $id: entry,
         id: true,
-        title: { $inherit: { $type: 'lekkerType', $merge: true } }, // TODO: throw, not allowed probably
-        ding: { $inherit: { $type: 'lekkerType', $merge: true } },
+        title: { $inherit: { $merge: true } },
+        ding: { $inherit: { $merge: true } },
       }),
       {
         id: entry,
@@ -1754,95 +1755,101 @@ test.serial('get - text record', async (t) => {
   await client.destroy()
 })
 
-test.serial('get - $inherit with object types does deep merge', async (t) => {
-  const client = connect({ port })
+test.serial.only(
+  'get - $inherit with object types does deep merge',
+  async (t) => {
+    const client = connect({ port })
 
-  const parentOfParent = await client.set({
-    $id: 'vipofp',
-    type: 'lekkerType',
-    title: {
-      en: 'nice!',
-      de: 'dont want to inherit this',
-    },
-    ding: {
-      dang: {
-        dung: 9000,
-        dunk: 'hello this time it should be here',
+    const parentOfParent = await client.set({
+      $id: 'vipofp',
+      type: 'lekkerType',
+      title: {
+        en: 'nice!',
+        de: 'dont want to inherit this',
       },
-      dong: ['hello', 'yesh'],
-      dung: 123,
-    },
-  })
+      ding: {
+        dang: {
+          dung: 9000,
+          dunk: 'hello this time it should be here',
+        },
+        dong: ['hello', 'yesh'],
+        dung: 123,
+      },
+    })
 
-  const parentEntry = await client.set({
-    $id: 'vip',
-    type: 'lekkerType',
-    title: {
-      en: 'nice!',
-      de: 'dont want to inherit this',
-    },
-    parents: {
-      $add: [parentOfParent],
-    },
-    ding: {
-      dang: {
-        dung: 115,
+    const parentEntry = await client.set({
+      $id: 'vip',
+      type: 'lekkerType',
+      title: {
+        en: 'nice!',
+        de: 'dont want to inherit this',
       },
-      dunk: {
-        dong: 1212,
+      parents: {
+        $add: [parentOfParent],
       },
-    },
-  })
+      ding: {
+        texty: { de: 'hallo' },
+        dang: {
+          dung: 115,
+        },
+        dunk: {
+          dong: 1212,
+        },
+      },
+    })
 
-  const entry = await client.set({
-    $id: 'vie',
-    type: 'lekkerType',
-    parents: {
-      $add: [parentEntry],
-    },
-    title: {
-      en: 'nice!',
-    },
-    ding: {
-      dunk: {
-        ding: 99,
+    const entry = await client.set({
+      $id: 'vie',
+      type: 'lekkerType',
+      parents: {
+        $add: [parentEntry],
       },
-    },
-  })
-
-  t.deepEqualIgnoreOrder(
-    await client.get({
-      $id: entry,
-      id: true,
-      title: { $inherit: { $type: 'lekkerType', $deepMerge: true } }, // TODO: throw, not allowed probably
-      ding: { $inherit: { $type: 'lekkerType', $deepMerge: true } },
-      // title: { $inherit: { $type: 'lekkerType', $merge: true } }, // TODO: throw, not allowed probably
-      // ding: { $inherit: { $type: 'lekkerType', $merge: true } },
-    }),
-    {
-      id: entry,
       title: {
         en: 'nice!',
       },
       ding: {
-        dong: ['hello', 'yesh'],
-        dang: {
-          dung: 115,
-          dunk: 'hello this time it should be here',
-        },
-        dung: 123,
+        texty: { en: 'hello' },
         dunk: {
           ding: 99,
-          dong: 1212,
         },
       },
-    }
-  )
+    })
 
-  await client.delete('root')
+    t.deepEqualIgnoreOrder(
+      await client.get({
+        $id: entry,
+        id: true,
+        title: { $inherit: { $deepMerge: true } },
+        ding: { $inherit: { $deepMerge: true } },
+        // title: { $inherit: { $type: 'lekkerType', $merge: true } }, // TODO: throw, not allowed probably
+        // ding: { $inherit: { $type: 'lekkerType', $merge: true } },
+      }),
+      {
+        id: entry,
+        title: {
+          en: 'nice!',
+        },
+        ding: {
+          texty: { en: 'hello' },
+          dong: ['hello', 'yesh'],
+          dang: {
+            dung: 115,
+            dunk: 'hello this time it should be here',
+          },
+          dung: 123,
+          dunk: {
+            ding: 99,
+            dong: 1212,
+          },
+        },
+      }
+    )
 
-  client.destroy()
-})
+    await client.delete('root')
+
+    client.destroy()
+  }
+)
 
 test.serial('get - $inherit with record types does deep merge', async (t) => {
   const client = connect({ port })

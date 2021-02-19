@@ -75,17 +75,20 @@ async function mergeObj(
         $operator: 'exists',
         $field: field,
       },
-      {
-        isFork: true,
-        $or: op.types.map((t) => {
-          return {
-            $operator: '=',
-            $field: 'type',
-            $value: t,
-          }
-        }),
-      },
     ],
+  }
+
+  if (op.types) {
+    fork.$and.push({
+      isFork: true,
+      $or: op.types.map((t) => {
+        return {
+          $operator: '=',
+          $field: 'type',
+          $value: t,
+        }
+      }),
+    })
   }
 
   const rpn = ast2rpn(fork)
@@ -183,17 +186,20 @@ async function deepMergeObj(
         $operator: 'exists',
         $field: field,
       },
-      {
-        isFork: true,
-        $or: op.types.map((t) => {
-          return {
-            $operator: '=',
-            $field: 'type',
-            $value: t,
-          }
-        }),
-      },
     ],
+  }
+
+  if (op.types) {
+    fork.$and.push({
+      isFork: true,
+      $or: op.types.map((t) => {
+        return {
+          $operator: '=',
+          $field: 'type',
+          $value: t,
+        }
+      }),
+    })
   }
 
   const rpn = ast2rpn(fork)
@@ -478,13 +484,16 @@ export default async function inherit(
 
     return executeNestedGetOperations(client, p, lang, ctx)
   } else if (op.single) {
-    if (op.merge === true && (fs.type === 'object' || fs.type === 'record')) {
+    if (
+      op.merge === true &&
+      (!fs || fs.type === 'object' || fs.type === 'record')
+    ) {
       return mergeObj(client, op, schema, lang, ctx)
     }
 
     if (
       op.deepMerge === true &&
-      (fs.type === 'object' || fs.type === 'record')
+      (!fs || fs.type === 'object' || fs.type === 'record')
     ) {
       return deepMergeObj(client, op, schema, lang, ctx)
     }
