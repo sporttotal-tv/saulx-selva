@@ -18,6 +18,7 @@ const sendUpdate = async (
   subscription: Subscription,
   nodeId?: string
 ) => {
+  console.log('UPDATE', subscription.channel)
   // if (!subscription) {
   //   return
   // }
@@ -77,6 +78,7 @@ const sendUpdate = async (
   let payload
   try {
     payload = await client.get(getOptions)
+    console.log('PPPP', subscription.channel, payload)
 
     const t = Date.now() - startTime
 
@@ -90,6 +92,7 @@ const sendUpdate = async (
     payload = {
       ___$error___: err.message,
     }
+    console.log('EEEE', subscription.channel, err)
   }
 
   if (payload.$ignore === true) {

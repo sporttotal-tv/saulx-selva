@@ -1797,3 +1797,134 @@ test.serial(
     await client.destroy()
   }
 )
+
+test.serial.only('subs upcoming, live and past changing to now', async (t) => {
+  const client = connect({ port }, { loglevel: 'info' })
+  const now = Date.now()
+  let result
+
+  await client.set({
+    type: 'match',
+    $id: 'ma1',
+    name: 'upcoming match',
+    startTime: now + 2 * 60 * 60 * 1000, // 2h from now
+    endTime: now + 5 * 60 * 60 * 1000, // 5h from now
+  })
+
+  client
+    .observe(
+      {
+        past: {
+          id: true,
+          $list: {
+            $limit: 10,
+            $find: {
+              $traverse: 'descendants',
+              $filter: [
+                {
+                  $operator: '=',
+                  $value: 'match',
+                  $field: 'type',
+                },
+                {
+                  $value: 'now',
+                  $field: 'endTime',
+                  $operator: '<',
+                },
+              ],
+            },
+          },
+        },
+        live: {
+          id: true,
+          $list: {
+            $limit: 10,
+            $find: {
+              $traverse: 'descendants',
+              $filter: [
+                {
+                  $operator: '=',
+                  $value: 'match',
+                  $field: 'type',
+                },
+                {
+                  $value: 'now',
+                  $field: 'startTime',
+                  $operator: '<',
+                },
+                {
+                  $value: 'now',
+                  $field: 'endTime',
+                  $operator: '>',
+                },
+              ],
+            },
+          },
+        },
+        upcoming: {
+          id: true,
+          $list: {
+            $limit: 10,
+            $find: {
+              $traverse: 'descendants',
+              $filter: [
+                {
+                  $operator: '=',
+                  $value: 'match',
+                  $field: 'type',
+                },
+                {
+                  $value: 'now',
+                  $field: 'startTime',
+                  $operator: '>',
+                },
+              ],
+            },
+          },
+        },
+      },
+      { immutable: true }
+    )
+    .subscribe((r) => {
+      result = r
+      console.log('-->', result)
+    })
+
+  await wait(500)
+  console.log('should be upcoming')
+  t.deepEqualIgnoreOrder(result, {
+    upcoming: [{ id: 'ma1' }],
+    past: [],
+    live: [],
+  })
+
+  await client.set({
+    $id: 'ma1',
+    startTime: 'now',
+  })
+  await wait(1000)
+
+  console.log('should be live', result)
+
+  t.deepEqualIgnoreOrder(result, {
+    upcoming: [],
+    past: [],
+    live: [{ id: 'ma1' }],
+  })
+
+  await client.set({
+    $id: 'ma1',
+    startTime: Date.now() - 5e3,
+    endTime: Date.now() - 2e3,
+  })
+
+  await wait(1000)
+  console.log('should be past')
+  t.deepEqualIgnoreOrder(result, {
+    upcoming: [],
+    past: [{ id: 'ma1' }],
+    live: [],
+  })
+
+  await client.delete('root')
+})
