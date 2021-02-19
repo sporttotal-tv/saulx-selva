@@ -117,6 +117,8 @@ async function mergeObj(
     '___selva_hierarchy',
     'bfs',
     'ancestors',
+    'offset',
+    -1,
     'merge',
     field,
     op.id,
@@ -126,6 +128,8 @@ async function mergeObj(
   console.log(
     '___selva_hierarchy',
     'bfs',
+    'offset',
+    -1,
     'ancestors',
     'merge',
     field,
@@ -142,20 +146,7 @@ async function mergeObj(
     lang
   )
 
-  const self = await executeGetOperation(
-    client,
-    lang,
-    ctx,
-    {
-      type: 'db',
-      id: op.id,
-      field: op.field,
-      sourceField: op.sourceField,
-    },
-    false
-  )
-
-  return Object.assign(o, self)
+  return o
 }
 
 async function deepMergeObj(
@@ -228,6 +219,8 @@ async function deepMergeObj(
     '___selva_hierarchy',
     'bfs',
     'ancestors',
+    'offset',
+    -1,
     'deepMerge',
     field,
     op.id,
@@ -237,6 +230,8 @@ async function deepMergeObj(
     '___selva_hierarchy',
     'bfs',
     'ancestors',
+    'offset',
+    -1,
     'deepMerge',
     field,
     op.id,
@@ -244,22 +239,7 @@ async function deepMergeObj(
   )
 
   const o = buildResultFromIdFieldAndValue(ctx, client, remapped, field, res)
-
-  const self = await executeGetOperation(
-    client,
-    lang,
-    ctx,
-    {
-      type: 'db',
-      id: op.id,
-      field: op.field,
-      sourceField: op.sourceField,
-    },
-    false
-  )
-
-  const total = deepMerge(o, self)
-  return total
+  return o
 }
 
 async function inheritItem(
