@@ -1922,8 +1922,6 @@ test.serial('get - $inherit with record types does deep merge', async (t) => {
       id: true,
       title: { $inherit: { $type: 'lekkerType', $deepMerge: true } }, // TODO: throw, not allowed probably
       objRec: { $inherit: { $type: 'lekkerType', $deepMerge: true } },
-      // title: { $inherit: { $type: 'lekkerType', $merge: true } }, // TODO: throw, not allowed probably
-      // objRec: { $inherit: { $type: 'lekkerType', $merge: true } },
     }),
     {
       id: entry,
