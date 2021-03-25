@@ -1,5 +1,5 @@
 {
-  "name": "@saulx/selva-server",
+  "name": "@sporttotal/selva-server",
   "version": "3.2.11",
   "main": "./dist/index.js",
   "scripts": {
@@ -57,9 +57,9 @@
     "typescript-to-lua": "^0.30.1"
   },
   "dependencies": {
-    "@saulx/utils": "^1.6.6",
-    "@saulx/selva-diff": "^1.0.17",
-    "@saulx/selva": "3.2.11",
+    "@sporttotal/utils": "^1.6.6",
+    "@sporttotal/selva-diff": "^1.0.17",
+    "@sporttotal/selva": "3.2.11",
     "aws-sdk": "^2.841.0",
     "body-parser": "^1.19.0",
     "before-exit": "^1.0.0",
