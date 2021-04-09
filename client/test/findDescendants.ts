@@ -1,7 +1,6 @@
 import test from 'ava'
 import { connect } from '../src/index'
-import { start } from '@import { start } from '@sporttotal/selva-server'
-/selva-server'
+import { start } from '@sporttotal/selva-server'
 import './assertions'
 import { wait } from './assertions'
 import getPort from 'get-port'
