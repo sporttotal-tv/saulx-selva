@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs'
-import { connect } from '@saulx/selva'
+import { connect } from '@sporttotal/selva'
 import { join as pathJoin } from 'path'
 
 let LAST_BACKUP_TIMESTAMP: number = 0

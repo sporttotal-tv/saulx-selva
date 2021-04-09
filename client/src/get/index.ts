@@ -4,7 +4,7 @@ import createGetOperations from './createGetOperations'
 import executeGetOperations, { adler32 } from './executeGetOperations'
 import resolveId from './resolveId'
 import combineResults from './combineResults'
-import { createRpn } from '@saulx/selva-query-ast-parser'
+import { createRpn } from '@sporttotal/selva-query-ast-parser'
 
 // add this later!
 import validate, {
@@ -14,7 +14,7 @@ import validate, {
 } from './validate'
 
 // move to saulx/utils
-import { deepMerge } from '@saulx/utils'
+import { deepMerge } from '@sporttotal/utils'
 import { ServerDescriptor } from '~selva/types'
 
 function getExtraQueriesByField(

@@ -3,7 +3,7 @@ import {
   connect,
   SelvaClient,
   ServerDescriptor,
-} from '@saulx/selva'
+} from '@sporttotal/selva'
 import { ServerOptions } from '../types'
 import { EventEmitter } from 'events'
 import startRedis from './startRedis'

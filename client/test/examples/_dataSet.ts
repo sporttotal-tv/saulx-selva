@@ -1,4 +1,4 @@
-import { SelvaClient } from '@saulx/selva'
+import { SelvaClient } from '@sporttotal/selva'
 
 export const setDataSet = async (client: SelvaClient) => {
   await Promise.all(

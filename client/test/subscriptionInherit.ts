@@ -1,9 +1,9 @@
 import test from 'ava'
 import { connect } from '../src/index'
-import { start } from '@saulx/selva-server'
+import { start } from '@sporttotal/selva-server'
 import { wait } from './assertions'
 import getPort from 'get-port'
-import { deepCopy } from '@saulx/utils'
+import { deepCopy } from '@sporttotal/utils'
 
 let srv
 let port: number

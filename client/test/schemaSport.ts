@@ -1,7 +1,7 @@
 import test from 'ava'
 import { connect } from '../src/index'
 import { Schema, SchemaOptions, Fields, FieldSchema } from '../src/schema'
-import { start } from '@saulx/selva-server'
+import { start } from '@sporttotal/selva-server'
 import './assertions'
 import getPort from 'get-port'
 

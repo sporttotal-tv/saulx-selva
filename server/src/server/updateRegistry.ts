@@ -1,4 +1,4 @@
-import { SelvaClient, constants } from '@saulx/selva'
+import { SelvaClient, constants } from '@sporttotal/selva'
 import { RegistryInfo } from '../types'
 import { SelvaServer } from './'
 

@@ -1,6 +1,6 @@
 import { Subscription, SubscriptionManager } from '../types'
 import addUpdate from './addUpdate'
-import { RedisCommand } from '@saulx/selva'
+import { RedisCommand } from '@sporttotal/selva'
 
 let fieldsProgress = {}
 let fieldsInQueue = []

@@ -1,6 +1,6 @@
 const { performance } = require('perf_hooks')
-const { connect } = require('@saulx/selva')
-const { start } = require('@saulx/selva-server')
+const { connect } = require('@sporttotal/selva')
+const { start } = require('@sporttotal/selva-server')
 const getPort = require('get-port')
 const { RateLimit } = require('async-sema')
 

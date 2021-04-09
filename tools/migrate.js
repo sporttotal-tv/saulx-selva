@@ -1,5 +1,5 @@
-const { connect } = require('@saulx/selva')
-const { start } = require('@saulx/selva-server')
+const { connect } = require('@sporttotal/selva')
+const { start } = require('@sporttotal/selva-server')
 const fs = require('fs').promises
 const os = require('os')
 const path = require('path')

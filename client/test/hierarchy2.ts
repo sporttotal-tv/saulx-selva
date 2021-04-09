@@ -1,6 +1,6 @@
 import test from 'ava'
 import { connect } from '../src/index'
-import { start, s3Backups } from '@saulx/selva-server'
+import { start, s3Backups } from '@sporttotal/selva-server'
 import './assertions'
 import { wait } from './assertions'
 import getPort from 'get-port'

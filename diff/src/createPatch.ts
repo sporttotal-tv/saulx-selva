@@ -1,4 +1,4 @@
-import { hashObject } from '@saulx/utils'
+import { hashObject } from '@sporttotal/utils'
 
 // check faster way - map or this
 const parseValue = (v: any) => {

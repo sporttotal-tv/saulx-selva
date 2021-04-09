@@ -1,8 +1,8 @@
 import { SubscriptionManager, Subscription } from './types'
-import { constants } from '@saulx/selva'
+import { constants } from '@sporttotal/selva'
 import addUpdate from './update/addUpdate'
 import sendUpdate from './update/sendUpdate'
-import { ServerSelector } from '@saulx/selva/dist/src/types'
+import { ServerSelector } from '@sporttotal/selva/dist/src/types'
 
 const { EVENTS, SUBSCRIPTION_UPDATE, TRIGGER_UPDATE } = constants
 

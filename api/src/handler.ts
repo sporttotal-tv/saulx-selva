@@ -1,8 +1,13 @@
 import { IncomingMessage, ServerResponse } from 'http'
 import { json } from 'body-parser'
-import { connect, ConnectOptions, SelvaClient, GetOptions } from '@saulx/selva'
+import {
+  connect,
+  ConnectOptions,
+  SelvaClient,
+  GetOptions,
+} from '@sporttotal/selva'
 import * as url from 'url'
-import { SetOptions } from '@saulx/selva/dist/src/set'
+import { SetOptions } from '@sporttotal/selva/dist/src/set'
 
 export type MiddlewareNext = (proceed: boolean) => void
 

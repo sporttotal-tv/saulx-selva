@@ -1,7 +1,7 @@
 import { promisify } from 'util'
 import test from 'ava'
 import { connect } from '../src/index'
-import { start, startReplica } from '@saulx/selva-server'
+import { start, startReplica } from '@sporttotal/selva-server'
 import redis, { RedisClient, ReplyError } from 'redis'
 import './assertions'
 import { wait } from './assertions'

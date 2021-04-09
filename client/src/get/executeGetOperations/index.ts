@@ -6,7 +6,7 @@ import createGetOperations from '../createGetOperations'
 import { GetOptions } from '../'
 import find from './find'
 import inherit from './inherit'
-import { Rpn } from '@saulx/selva-query-ast-parser'
+import { Rpn } from '@sporttotal/selva-query-ast-parser'
 import { Schema } from '~selva/schema'
 import { ServerDescriptor } from '~selva/types'
 

@@ -1,5 +1,5 @@
 import test from 'ava'
-import diff, { applyPatch } from '@saulx/selva-diff'
+import diff, { applyPatch } from '@sporttotal/selva-diff'
 import region from './examples/region.json'
 import { a, b } from './examples/complex'
 

@@ -1,8 +1,8 @@
 const fs = require('fs')
 const path = require('path')
 const execa = require('execa')
-const { start } = require('@saulx/selva-server')
-const { connect } = require('@saulx/selva')
+const { start } = require('@sporttotal/selva-server')
+const { connect } = require('@sporttotal/selva')
 
 const SOURCE_DUMP =
   process.env.SOURCE_DUMP ||

@@ -1,4 +1,4 @@
-import { deepCopy } from '@saulx/utils'
+import { deepCopy } from '@sporttotal/utils'
 
 const nestedApplyPatch = (
   value: Object | Array<any>,

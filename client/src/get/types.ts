@@ -1,5 +1,5 @@
 import { Id } from '../schema/index'
-// import { FilterAST, Rpn, Fork } from '@saulx/selva-query-ast-parser'
+// import { FilterAST, Rpn, Fork } from '@sporttotal/selva-query-ast-parser'
 
 export declare type Value = (string | number) | (string | number)[]
 export declare type FilterAST = {

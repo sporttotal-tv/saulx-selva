@@ -1,5 +1,5 @@
 import { createHash } from 'crypto'
-import { stringHash as hash } from '@saulx/utils'
+import { stringHash as hash } from '@sporttotal/utils'
 
 export function LargeHash(str: string): string {
   const hashingFn = createHash('sha256')

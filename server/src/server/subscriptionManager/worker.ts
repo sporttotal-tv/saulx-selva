@@ -1,6 +1,6 @@
 import { ServerOptions } from '../../types'
 import { SubscriptionManager } from './types'
-import { SelvaClient } from '@saulx/selva'
+import { SelvaClient } from '@sporttotal/selva'
 import { parentPort } from 'worker_threads'
 import addListeners from './addListeners'
 import updateSubscriptionData from './updateSubscriptionData'

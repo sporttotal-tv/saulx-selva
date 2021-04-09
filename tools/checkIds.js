@@ -1,4 +1,4 @@
-const { connect } = require('@saulx/selva')
+const { connect } = require('@sporttotal/selva')
 const fs = require('fs').promises
 const os = require('os')
 const path = require('path')

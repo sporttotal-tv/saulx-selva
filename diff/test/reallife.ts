@@ -1,9 +1,9 @@
 import test from 'ava'
-import diff, { applyPatch } from '@saulx/selva-diff'
+import diff, { applyPatch } from '@sporttotal/selva-diff'
 import cmsJson from './examples/cms.json'
 import cmsJsonResult from './examples/cmsResult.json'
 
-import { deepCopy } from '@saulx/utils'
+import { deepCopy } from '@sporttotal/utils'
 
 test('Weird problem in diffing in sstv cms', async (t) => {
   // foqj71G5W

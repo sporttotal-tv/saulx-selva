@@ -1,5 +1,5 @@
 import updateRegistry from './updateRegistry'
-import { ServerDescriptor } from '@saulx/selva'
+import { ServerDescriptor } from '@sporttotal/selva'
 import { ServerOptions, Stats } from '../types'
 import { SelvaServer } from './'
 

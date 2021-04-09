@@ -1,7 +1,7 @@
 import test from 'ava'
 import fetch from 'node-fetch'
 import { connect } from '../src/index'
-import { start, startTextServer } from '@saulx/selva-server'
+import { start, startTextServer } from '@sporttotal/selva-server'
 import './assertions'
 import { wait } from './assertions'
 import getPort from 'get-port'

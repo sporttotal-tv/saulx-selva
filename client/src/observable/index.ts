@@ -14,12 +14,12 @@ import {
 import parseError from './parseError'
 import { ServerSelector } from '../types'
 import chalk from 'chalk'
-import { applyPatch } from '@saulx/selva-diff'
+import { applyPatch } from '@sporttotal/selva-diff'
 
 // import { unzip as unzipCb } from 'zlib'
 // import { promisify } from 'util'
 
-import { deepCopy, wait } from '@saulx/utils'
+import { deepCopy, wait } from '@sporttotal/utils'
 
 // const unzip = promisify(unzipCb)
 

@@ -1,6 +1,6 @@
 import test from 'ava'
 import { connect } from '../src/index'
-import { start } from '@saulx/selva-server'
+import { start } from '@sporttotal/selva-server'
 import './assertions'
 import { wait } from './assertions'
 

@@ -1,5 +1,5 @@
 import { SelvaServer } from '../'
-import { constants, ServerDescriptor, SelvaClient } from '@saulx/selva'
+import { constants, ServerDescriptor, SelvaClient } from '@sporttotal/selva'
 import chalk from 'chalk'
 
 const { REGISTRY_UPDATE, REGISTRY_SUBSCRIPTION_INDEX } = constants

@@ -1,4 +1,4 @@
-const { connect } = require('@saulx/selva')
+const { connect } = require('@sporttotal/selva')
 
 async function run() {
   const client = await connect({ port: 6061 }, { loglevel: 'info' })

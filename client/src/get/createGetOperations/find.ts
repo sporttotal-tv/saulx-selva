@@ -1,5 +1,5 @@
 import { Find, GetOperationFind, GetOptions, Sort } from '../types'
-import { createAst } from '@saulx/selva-query-ast-parser'
+import { createAst } from '@sporttotal/selva-query-ast-parser'
 
 const createFindOperation = (
   find: Find,

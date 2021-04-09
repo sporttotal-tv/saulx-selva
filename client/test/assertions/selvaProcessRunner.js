@@ -1,4 +1,4 @@
-const { start } = require('@saulx/selva-server')
+const { start } = require('@sporttotal/selva-server')
 const getPort = require('get-port')
 
 ;(async () => {

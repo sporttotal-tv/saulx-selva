@@ -6,7 +6,7 @@ import {
   startReplica,
   startOrigin,
   startRegistry,
-} from '@saulx/selva-server'
+} from '@sporttotal/selva-server'
 import './assertions'
 import getPort from 'get-port'
 import { wait, worker, removeDump } from './assertions'

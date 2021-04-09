@@ -32,14 +32,14 @@ pkgs.forEach((v) => {
   v.version = version.join('.')
 })
 
-clientPkg.devDependencies['@saulx/selva-server'] = serverPkg.version
-serverPkg.dependencies['@saulx/selva'] = clientPkg.version
-apiPkg.dependencies['@saulx/selva'] = clientPkg.version
-apiPkg.devDependencies['@saulx/selva-server'] = serverPkg.version
-toolsPkg.dependencies['@saulx/selva'] = clientPkg.version
-toolsPkg.devDependencies['@saulx/selva-server'] = serverPkg.version
+clientPkg.devDependencies['@sporttotal/selva-server'] = serverPkg.version
+serverPkg.dependencies['@sporttotal/selva'] = clientPkg.version
+apiPkg.dependencies['@sporttotal/selva'] = clientPkg.version
+apiPkg.devDependencies['@sporttotal/selva-server'] = serverPkg.version
+toolsPkg.dependencies['@sporttotal/selva'] = clientPkg.version
+toolsPkg.devDependencies['@sporttotal/selva-server'] = serverPkg.version
 
-// dependencies: @saulx/selva
+// dependencies: @sporttotal/selva
 fs.writeFileSync(client, JSON.stringify(clientPkg, void 0, 2))
 fs.writeFileSync(server, JSON.stringify(serverPkg, void 0, 2))
 fs.writeFileSync(api, JSON.stringify(apiPkg, void 0, 2))

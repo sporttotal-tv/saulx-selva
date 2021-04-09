@@ -1,5 +1,5 @@
 import ProcessManager from './processManager'
-import { SelvaClient, ServerType } from '@saulx/selva'
+import { SelvaClient, ServerType } from '@sporttotal/selva'
 
 export default class RedisManager extends ProcessManager {
   private redisPort: number

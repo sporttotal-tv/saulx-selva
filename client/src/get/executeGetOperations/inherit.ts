@@ -17,8 +17,8 @@ import executeGetOperations, {
   executeGetOperation,
 } from './'
 import { FieldSchema, Schema } from '../../schema'
-import { ast2rpn } from '@saulx/selva-query-ast-parser'
-import { deepMerge } from '@saulx/utils'
+import { ast2rpn } from '@sporttotal/selva-query-ast-parser'
+import { deepMerge } from '@sporttotal/utils'
 import { buildResultFromIdFieldAndValue } from './util'
 
 function makeRealKeys(

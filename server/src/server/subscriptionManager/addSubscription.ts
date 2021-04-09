@@ -1,5 +1,5 @@
 import { SubscriptionManager, Subscription } from './types'
-import { constants, GetOptions } from '@saulx/selva'
+import { constants, GetOptions } from '@sporttotal/selva'
 import { hash } from './util'
 import addUpdate from './update/addUpdate'
 import { addOriginListeners } from './originListeners'

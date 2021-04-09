@@ -1,5 +1,5 @@
 import test from 'ava'
-import { start } from '@saulx/selva-server'
+import { start } from '@sporttotal/selva-server'
 import './assertions'
 import getPort from 'get-port'
 import { spawn, execSync } from 'child_process'

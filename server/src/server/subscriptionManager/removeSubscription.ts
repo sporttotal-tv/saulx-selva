@@ -1,5 +1,5 @@
 import { SubscriptionManager } from './types'
-import { constants } from '@saulx/selva'
+import { constants } from '@sporttotal/selva'
 import { removeOriginListeners } from './originListeners'
 import updateRegistry from './updateRegistrySubscriptions'
 

@@ -1,4 +1,4 @@
-import { ConnectOptions, ServerType } from '@saulx/selva'
+import { ConnectOptions, ServerType } from '@sporttotal/selva'
 
 import { BackupFns } from './backups'
 

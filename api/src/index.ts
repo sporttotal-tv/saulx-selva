@@ -1,5 +1,5 @@
 import * as http from 'http'
-import { ConnectOptions } from '@saulx/selva'
+import { ConnectOptions } from '@sporttotal/selva'
 import mkHandlers, { Middleware } from './handler'
 import * as url from 'url'
 

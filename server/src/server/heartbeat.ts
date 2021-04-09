@@ -1,5 +1,5 @@
 import { SelvaServer } from '..'
-import { constants } from '@saulx/selva'
+import { constants } from '@sporttotal/selva'
 
 const startServerHeartbeat = (server: SelvaServer) => {
   const setHeartbeat = () => {

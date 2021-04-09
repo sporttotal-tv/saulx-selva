@@ -1,5 +1,5 @@
 import { SelvaServer } from '..'
-import { constants } from '@saulx/selva'
+import { constants } from '@sporttotal/selva'
 import chalk, { keyword } from 'chalk'
 
 export const subscriptionRegistry = (server: SelvaServer) => {

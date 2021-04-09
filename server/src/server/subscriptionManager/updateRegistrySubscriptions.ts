@@ -1,4 +1,4 @@
-import { SelvaClient, constants } from '@saulx/selva'
+import { SelvaClient, constants } from '@sporttotal/selva'
 import { SubscriptionManager } from './types'
 import chalk from 'chalk'
 

@@ -1,5 +1,5 @@
 import test from 'ava'
-import { moduleId as parentModuleId, connect, connections } from '@saulx/selva'
+import { moduleId as parentModuleId, connect, connections } from '@sporttotal/selva'
 import {
   startRegistry,
   startOrigin,

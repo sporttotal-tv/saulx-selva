@@ -1,4 +1,4 @@
-import { GetOptions, SelvaClient, ServerDescriptor } from '@saulx/selva'
+import { GetOptions, SelvaClient, ServerDescriptor } from '@sporttotal/selva'
 import { Worker } from 'worker_threads'
 
 export type Tree = Record<string, any>

@@ -7,7 +7,7 @@ import fs from 'fs'
 import { Worker } from 'worker_threads'
 import rimraf from 'rimraf'
 import beforeExit from 'before-exit'
-import { connections } from '@saulx/selva'
+import { connections } from '@sporttotal/selva'
 import chalk from 'chalk'
 
 declare module 'ava' {
@@ -105,8 +105,8 @@ const worker = (fn: Function, context?: any): Promise<[any, Worker]> =>
     const script = context
       ? `
     const fn = ${body};
-    const selvaServer = require('@saulx/selva-server')
-    const selva = require('@saulx/selva')
+    const selvaServer = require('@sporttotal/selva-server')
+    const selva = require('@sporttotal/selva')
     const wait = (t = 100) => (new Promise(r => setTimeout(r, t)))
 
     global.isWorker = true
@@ -134,8 +134,8 @@ const worker = (fn: Function, context?: any): Promise<[any, Worker]> =>
       const fn = ${body};
       global.isWorker = true
 
-      const selvaServer = require('@saulx/selva-server')
-      const selva = require('@saulx/selva')
+      const selvaServer = require('@sporttotal/selva-server')
+      const selva = require('@sporttotal/selva')
       const wait = (t = 100) => (new Promise(r => setTimeout(r, t)))
 
       const p = { wait }

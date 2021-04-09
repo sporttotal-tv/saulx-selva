@@ -1,11 +1,11 @@
 import { SelvaClient } from '../../'
 import { GetOperationFind, GetResult, GetOperation, GetOptions } from '../types'
 import { typeCast } from './'
-import { ast2rpn, Fork, FilterAST, isFork } from '@saulx/selva-query-ast-parser'
+import { ast2rpn, Fork, FilterAST, isFork } from '@sporttotal/selva-query-ast-parser'
 import { executeNestedGetOperations, ExecContext, addMarker } from './'
 import { padId, joinIds, getNestedSchema } from '../utils'
 import { setNestedResult } from '../utils'
-import { deepMerge } from '@saulx/utils'
+import { deepMerge } from '@sporttotal/utils'
 
 function parseGetOpts(props: GetOptions, path: string): [Set<string>, boolean] {
   const pathPrefix = path === '' ? '' : path + '.'
