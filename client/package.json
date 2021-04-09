@@ -1,6 +1,6 @@
 {
   "name": "@sporttotal/selva",
-  "version": "3.2.11",
+  "version": "3.2.12",
   "main": "dist/src/index.js",
   "scripts": {
     "build": "yarn clean && yarn buildLua && yarn buildTs",
@@ -50,7 +50,7 @@
     ]
   },
   "devDependencies": {
-    "@sporttotal/selva-server": "3.2.11",
+    "@sporttotal/selva-server": "3.2.12",
     "before-exit": "1.0.0",
     "async-exec": "^1.1.0",
     "@sindresorhus/fnv1a": "^2.0.1",

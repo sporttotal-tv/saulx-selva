@@ -1,6 +1,6 @@
 {
   "name": "@sporttotal/selva-server",
-  "version": "3.2.11",
+  "version": "3.2.12",
   "main": "./dist/index.js",
   "scripts": {
     "build": "tsc",
@@ -59,7 +59,7 @@
   "dependencies": {
     "@sporttotal/utils": "^1.6.6",
     "@sporttotal/selva-diff": "^1.0.17",
-    "@sporttotal/selva": "3.2.11",
+    "@sporttotal/selva": "3.2.12",
     "aws-sdk": "^2.841.0",
     "body-parser": "^1.19.0",
     "before-exit": "^1.0.0",
