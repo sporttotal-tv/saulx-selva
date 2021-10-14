@@ -1,6 +1,6 @@
 import test from 'ava'
 import './assertions'
-import { connect } from '@saulx/selva'
+import { connect } from '@sporttotaltv/selva'
 import { start } from '@saulx/selva-server'
 import getPort from 'get-port'
 import { start as apiStart } from '../src/index'
