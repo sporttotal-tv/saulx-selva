@@ -1,8 +1,13 @@
 import { IncomingMessage, ServerResponse } from 'http'
 import { json } from 'body-parser'
-import { connect, ConnectOptions, SelvaClient, GetOptions } from '@saulx/selva'
+import {
+  connect,
+  ConnectOptions,
+  SelvaClient,
+  GetOptions
+} from '@sporttotaltv/selva'
 import * as url from 'url'
-import { SetOptions } from '@saulx/selva/dist/src/set'
+import { SetOptions } from '@sporttotaltv/selva/dist/src/set'
 
 export type MiddlewareNext = (proceed: boolean) => void
 
@@ -144,7 +149,12 @@ export function noHasGuard(setOpts: any, result: any): boolean {
 }
 
 function isObjectChildrenValueEmpty(object) {
-  return Object.values(object).every(val => (val === null || val === '' || (val.constructor === Object && isObjectChildrenValueEmpty(val))))
+  return Object.values(object).every(
+    val =>
+      val === null ||
+      val === '' ||
+      (val.constructor === Object && isObjectChildrenValueEmpty(val))
+  )
 }
 
 function parseJson(

@@ -5,6 +5,7 @@ import { SCRIPT } from '../constants'
 import { setInBatches, MAX_BATCH_SIZE } from './batching'
 import parseSetObject from './validate'
 import { getSchema } from 'lua/src/schema'
+import util from 'util'
 
 export async function _set(
   client: SelvaClient,
@@ -26,6 +27,7 @@ export async function _set(
 }
 
 async function set(client: SelvaClient, payload: SetOptions): Promise<string> {
+  console.info('Selva Set: ', util.inspect(payload, false, 10, true))
   const schema = client.schemas[payload.$db || 'default']
 
   if (!payload.type && !payload.$id && payload.$alias) {

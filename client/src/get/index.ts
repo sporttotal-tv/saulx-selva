@@ -7,6 +7,7 @@ import validate, {
   PostGetExtraQuery
 } from './validate'
 import { deepMerge } from './deepMerge'
+import util from 'util'
 
 async function combineResults(
   client: SelvaClient,
@@ -264,6 +265,7 @@ async function get(
   meta?: any,
   nested: boolean = false
 ): Promise<GetResult> {
+  console.info('Selva Get: ', util.inspect(props, false, 10, true))
   const extraQueries: ExtraQueries = {}
   await validate(extraQueries, client, props)
   const newProps = makeNewGetOptions(
