@@ -139,19 +139,19 @@ export class SelvaClient extends EventEmitter {
   }
 
   async get(getOpts: GetOptions): Promise<GetResult> {
-    console.info('Selva Get: ', util.inspect(getOpts, false, 10, true))
+    // console.info('Selva Get: ', util.inspect(getOpts, false, 10, true))
     return get(this, getOpts)
   }
 
 
   async set(setOpts: SetOptions): Promise<Id | undefined> {
-    console.info('Selva Set: ', util.inspect(setOpts, false, 10, true))
+    // console.info('Selva Set: ', util.inspect(setOpts, false, 10, true))
     await this.initializeSchema(setOpts)
     return set(this, setOpts)
   }
 
   async delete(deleteOpts: DeleteOptions): Promise<boolean> {
-    console.info('Selva Delete: ', util.inspect(deleteOpts, false, 10, true))
+    // console.info('Selva Delete: ', util.inspect(deleteOpts, false, 10, true))
     await this.initializeSchema(deleteOpts)
     return deleteItem(this, deleteOpts)
   }
@@ -207,7 +207,7 @@ export class SelvaClient extends EventEmitter {
   }
 
   public observe(props: ObservableOptions | GetOptions, opts?: ObsSettings): Observable {
-    console.info('Selva Observe: ', util.inspect(props, false, 10, true))
+    // console.info('Selva Observe: ', util.inspect(props, false, 10, true))
     if (props.type === 'get' || props.type === 'schema') {
       return createObservable(<ObservableOptions>props, this)
     } 
